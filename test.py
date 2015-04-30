@@ -4,14 +4,26 @@ class Account():
     def __init__(self):
         self.balance = 1000000
         self.stock = 0
+        self.log = []
     def buy(self, price):
         if self.balance > price*1000:
             self.balance -= price*1000
             self.stock += 1
+            self.log.append([price, 0])
     def sell(self, price):
         if self.stock > 1:
             self.stock -= 1
             self.balance += price *1000
+            for i in range(len(self.log)):
+                if self.log[i][1] == 0:
+                    self.log[i][1] = price
+                    break
+    def checkStopLoss(self, price):
+        # not effective
+        for i in range(len(self.log)):
+            if self.log[i][1] == 0 and self.log[i][0] * 0.9 > price:
+                self.sell(price)
+
     def value(self, price):
         return self.balance + (self.stock * price*1000)
 
@@ -99,7 +111,7 @@ class target():
             lastD.append(d)
             while len(lastD) > 2:
                 del lastD[0]
-            if self.target[i]["Date"] == date:
+            if self.target[i]["Date"] == date and len(lastK) == 2 :
                 if k > 80 and self.getThru(lastK, lastD) == -1:
                     self.account.sell(self.target[i]["Open"])
                 elif k < 50 and self.getThru(lastK, lastD) == 1:
@@ -109,7 +121,6 @@ class target():
                     logcd = 22
                 else:
                     logcd -= 1
-                
                 print self.target[i]["Date"], self.account.stock, self.account.balance, self.account.value(self.target[i]["Close"])
         print log
 
