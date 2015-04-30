@@ -75,10 +75,12 @@ class target():
         diff = [slow[0]-fast[0], slow[1]-fast[1]]
         if diff[0] * diff[1] >= 0:
             return 0
-        if diff[0] > 0:
+        if diff[0] > 1:
             return 1
-        else:
+        elif diff[0] > -1:
             return -1
+        else:
+            return 0
             
     def test(self):
         i = 0
