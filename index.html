@@ -9,13 +9,25 @@ var twii = [];
 var target = [];
 google.load('visualization', '1', {packages: ['corechart', 'line']});
 google.setOnLoadCallback(drawChart);
+var twiiDone = 0;
+var targetDone = 0;
 $.get('/TWII', function(data, status){
     twii = data;
-    drawChart();
+    twiiDone = 1;
+    console.log("target", targetDone);
+    if (targetDone == 1) {
+        console.log("Draw1");
+        drawChart();
+    }
 });
 $.get('/0050', function(data, status){
     target = data;
-    drawChart();
+    targetDone = 1;
+    console.log("twiiDone", twiiDone);
+    if (twiiDone == 1) {
+        console.log("Draw2");
+        drawChart();
+    }
 });
 
 function drawChart() {
@@ -34,6 +46,8 @@ function drawChart() {
     }
 
     var options1 = {
+        width:900,
+        height:300,
         hAxis: {
             title: 'Time'
         },
@@ -42,6 +56,8 @@ function drawChart() {
         }
     };
     var options2 = {
+        width:900,
+        height:300,
         hAxis: {
             title: 'Time'
         },
@@ -50,16 +66,19 @@ function drawChart() {
         }
     };
 
-//    var chart1 = new google.visualization.LineChart(document.getElementById('chartTwii'));
-//    chart1.draw(data1, options1);
+    var chart1 = new google.visualization.LineChart(document.getElementById('chartTwii'));
+    chart1.draw(data1, options1);
     var chart2 = new google.visualization.LineChart(document.getElementById('chartTarget'));
     chart2.draw(data2, options2);
+
+    console.log(twii.length);
+    console.log(target.length);
 }
 </script>
 </head>
 <body>
-<div id="chartTwii"><div>
-<div id="chartTarget"><div>
+<div id="chartTwii"></div>
+<div id="chartTarget"></div>
 </body>
 </html>
 
