@@ -5,27 +5,33 @@ class Account():
         self.balance = 1000000
         self.stock = 0
         self.log = []
-    def buy(self, price):
+    def buy(self, price, date):
+        # if last buy earns, buy more
         if self.balance > price*1000:
             self.balance -= price*1000
             self.stock += 1
-            self.log.append([price, 0])
-    def sell(self, price):
+            self.log.append({"buyPrice": price, "sellPrice":0, "buyDate":date, "sellDate":None})
+    def sell(self, price, date):
+        # if last buy loses, sell more
         if self.stock > 1:
             self.stock -= 1
             self.balance += price *1000
             for i in range(len(self.log)):
-                if self.log[i][1] == 0:
-                    self.log[i][1] = price
+                if self.log[i]["sellPrice"] == 0:
+                    self.log[i]["sellPrice"] = price
+                    self.log[i]["sellDate"] = date
                     break
-    def checkStopLoss(self, price):
+    def checkStopLoss(self, price, date):
         # not effective
         for i in range(len(self.log)):
             if self.log[i][1] == 0 and self.log[i][0] * 0.9 > price:
-                self.sell(price)
+                self.sell(price, date)
 
     def value(self, price):
         return self.balance + (self.stock * price*1000)
+    def printLog(self):
+        for i in self.log:
+            print i
 
 class Taiex():
     def __init__(self):
@@ -113,9 +119,9 @@ class target():
                 del lastD[0]
             if self.target[i]["Date"] == date and len(lastK) == 2 :
                 if k > 80 and self.getThru(lastK, lastD) == -1:
-                    self.account.sell(self.target[i]["Open"])
+                    self.account.sell(self.target[i]["Open"], date)
                 elif k < 50 and self.getThru(lastK, lastD) == 1:
-                    self.account.buy(self.target[i]["Open"])
+                    self.account.buy(self.target[i]["Open"], date)
                 if logcd == 0:
                     log.append([self.target[i]["Date"], self.account.value(self.target[i]["Close"])])
                     logcd = 22
@@ -123,6 +129,7 @@ class target():
                     logcd -= 1
                 print self.target[i]["Date"], self.account.stock, self.account.balance, self.account.value(self.target[i]["Close"])
         print log
+        self.account.printLog()
 
 def main():
     t = target()

@@ -1,0 +1,45 @@
+<html ng-app="myApp">
+<head>
+<meta charset="utf-8">
+<title>twStock</title>
+<script src="https://www.google.com/jsapi"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+</head>
+<body>
+<script>
+google.load('visualization', '1', {packages: ['corechart', 'line']});
+google.setOnLoadCallback(drawBasic);
+var twii = [];
+$.get('/TWII', function(data, status){
+    twii = data;
+    drawBasic();
+});
+
+function drawBasic() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('date', 'Date');
+    data.addColumn('number', 'Index');
+    console.log(twii);
+
+    for (var i = 0; i < twii.length; i++) {
+        data.addRow([new Date(twii[i]["Date"]), parseFloat(twii[i]["Close"])]);
+    }
+
+    var options = {
+        hAxis: {
+            title: 'Time'
+        },
+        vAxis: {
+            title: 'TWII'
+        }
+    };
+
+    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+    chart.draw(data, options);
+}
+</script>
+<div id="chart_div"><div>
+</body>
+</html>
+
